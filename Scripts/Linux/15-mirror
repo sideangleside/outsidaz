@@ -1,0 +1,36 @@
+#!/bin/bash
+#########################################################################
+# 15-mirror								#
+# Author: Richard Jerrido						#
+# Version: 1.0								#
+# License: GPL								#
+# Function: This script changes your yum configuration 			#
+# 	    based upon network location					#
+# Dependencies: NetworkManager & yum 					#
+# Usage: Place script in /etc/NetworkManager/dispatcher.d/15-Mirror  	#
+#	 and made executable 						#
+#	 status every 15 seconds. Start from the shell or 		#
+#	 the GNOME Sessions menu for auto-start at login		#
+# URL : http://www.outsidaz.org/blog/2009/10/24/different-yum-repository-based-upon-network-location/ #
+#########################################################################
+
+
+
+if [ "$2" = "up" ]; then
+	grep -q "domain outsidaz.local" /etc/resolv.conf 
+	if [[ "$?" == "0" ]]; then
+		# "I am home" 
+		# Enable Outsidaz Repo
+		sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/outsidaz.repo
+		# Disable Fedora Repo
+		sed -i '1,6s/enabled=1/enabled=0/' /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo 
+		logger -t reposcript -p info "Switching to home repository configuration"
+	else
+		# "I am not home"
+		# Disable Outsidaz Repo
+		sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/outsidaz.repo
+		# Enable Fedora Repo
+		sed -i '1,6s/enabled=0/enabled=1/' /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo 
+		logger -t reposcript -p info "Switching to away repository configuration"
+	fi
+fi
