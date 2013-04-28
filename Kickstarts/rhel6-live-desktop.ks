@@ -12,7 +12,7 @@ part / --size 4096 --fstype ext4
 services --enabled=NetworkManager --disabled=network,sshd
 firstboot --disable
 
-# Pro Tip: RHN Satellite kickstart trees are yum repos :)
+# Pro Tip: RHN Satellite kickstart trees are yum repos 
 repo --name=released --baseurl=http://satellite1.auroracloud.com/ks/dist/ks-rhel-x86_64-server-6-6.4/
 
 %packages
